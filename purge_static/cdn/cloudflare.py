@@ -4,6 +4,10 @@ import sys
 import requests
 import six
 
+from purge_static.utils import chunk
+
+CLOUDFLARE_MAX_PURGE = 30
+
 
 class CloudFlareCDN(object):
     def __init__(self, args):
@@ -31,15 +35,14 @@ class CloudFlareCDN(object):
             sys.exit('No zone for CloudFlare, use --zone.')
 
     def purge(self, urls):
-        resp = requests.post(
-            'https://api.cloudflare.com/client/v4/zones/%s/purge_cache' % (self.zone,),
-            json={'files': urls}, headers={
-                'X-Auth-Email': self.email,
-                'X-Auth-Key': self.api_key,
-            }
-        ).json()
+        for group in chunk(urls, CLOUDFLARE_MAX_PURGE):
+            resp = requests.post(
+                'https://api.cloudflare.com/client/v4/zones/%s/purge_cache' % (self.zone,),
+                json={'files': group}, headers={
+                    'X-Auth-Email': self.email,
+                    'X-Auth-Key': self.api_key,
+                }
+            ).json()
 
-        if resp.get('success'):
-            return
-
-        sys.exit(resp)
+            if not resp.get('success'):
+                sys.exit(resp)
