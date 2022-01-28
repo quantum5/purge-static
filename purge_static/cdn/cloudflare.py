@@ -2,7 +2,6 @@ import json
 import sys
 
 import requests
-import six
 
 from purge_static.utils import chunk
 
@@ -24,17 +23,17 @@ class CloudFlareCDN(object):
 
         self.api_token = credentials.get('api_token')
         if self.api_token:
-            if not isinstance(self.api_token, six.string_types):
+            if not isinstance(self.api_token, str):
                 sys.exit('In credentials file: key "api_token" should map to a string')
 
             self.email = self.api_key = None
         else:
             self.email = credentials.get('email')
-            if not isinstance(self.email, six.string_types):
+            if not isinstance(self.email, str):
                 sys.exit('In credentials file: key "email" should map to a string')
 
             self.api_key = credentials.get('api_key')
-            if not isinstance(self.api_key, six.string_types):
+            if not isinstance(self.api_key, str):
                 sys.exit('In credentials file: key "api_key" should map to a string')
 
         self.zone = args.zone
