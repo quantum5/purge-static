@@ -1,7 +1,7 @@
 # `purge-static` [![PyPI](https://img.shields.io/pypi/v/purge-static.svg)](https://pypi.org/project/purge-static/) [![PyPI - Format](https://img.shields.io/pypi/format/purge-static.svg)](https://pypi.org/project/purge-static/) [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/purge-static.svg)](https://pypi.org/project/purge-static/)
 
 `purge-static` is a tool to find changed static files, show their URLs,
-and optionally purge them for you on your CDN, such as CloudFlare.
+and optionally purge them for you on your CDN, such as Cloudflare.
 
 With `purge-static`, you can enable aggressive caching for your static
 site on your CDN, caching the entire site on the CDN edge. When you update
@@ -35,9 +35,15 @@ purge-static -d /path/to/my/webroot -u https://example.com \
 
 For more detailed description of the arguments, run `purge-static --help`.
 
-## CloudFlare
+## Cloudflare
 
-To use CloudFlare, you will need to create a credentials file:
+To use Cloudflare, you will need to create a credentials file:
+
+```json
+{"api_token": "myverysecretapitoken"}
+```
+
+For legacy API keys, use this instead:
 
 ```json
 {
@@ -53,4 +59,4 @@ purge-static -d /path/to/my/webroot -u https://example.com \
     --cloudflare -c /path/to/my/credentiails -z mycloudflarezoneid
 ```
 
-Note that `-z` takes the CloudFlare zone ID as 32 hex digits.
+Note that `-z` takes the Cloudflare zone ID as 32 hex digits.
