@@ -7,7 +7,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
 
 setup(
     name='purge-static',
-    version='0.1.1',
+    version='0.2.0',
     packages=find_packages(),
 
     entry_points={
