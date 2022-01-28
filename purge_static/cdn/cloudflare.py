@@ -22,26 +22,38 @@ class CloudFlareCDN(object):
         except ValueError:
             sys.exit('Credentials file not valid JSON: %s' % (args.credentials,))
 
-        self.email = credentials.get('email')
-        if not isinstance(self.email, six.string_types):
-            sys.exit('In credentials file: key "email" should map to a string')
+        self.api_token = credentials.get('api_token')
+        if self.api_token:
+            if not isinstance(self.api_token, six.string_types):
+                sys.exit('In credentials file: key "api_token" should map to a string')
 
-        self.api_key = credentials.get('api_key')
-        if not isinstance(self.api_key, six.string_types):
-            sys.exit('In credentials file: key "api_key" should map to a string')
+            self.email = self.api_key = None
+        else:
+            self.email = credentials.get('email')
+            if not isinstance(self.email, six.string_types):
+                sys.exit('In credentials file: key "email" should map to a string')
+
+            self.api_key = credentials.get('api_key')
+            if not isinstance(self.api_key, six.string_types):
+                sys.exit('In credentials file: key "api_key" should map to a string')
 
         self.zone = args.zone
         if not self.zone:
             sys.exit('No zone for CloudFlare, use --zone.')
 
     def purge(self, urls):
+        if self.api_token:
+            headers = {'Authorization': f'Bearer {self.api_token}'}
+        else:
+            headers = {
+                'X-Auth-Email': self.email,
+                'X-Auth-Key': self.api_key,
+            }
+
         for group in chunk(urls, CLOUDFLARE_MAX_PURGE):
             resp = requests.post(
                 'https://api.cloudflare.com/client/v4/zones/%s/purge_cache' % (self.zone,),
-                json={'files': group}, headers={
-                    'X-Auth-Email': self.email,
-                    'X-Auth-Key': self.api_key,
-                }
+                json={'files': group}, headers=headers
             ).json()
 
             if not resp.get('success'):
